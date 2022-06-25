@@ -5,7 +5,7 @@ import Adblocker from 'puppeteer-extra-plugin-adblocker';
 @Injectable()
 export class AppService {
   getHello(): string {
-    return 'Hello World!';
+    return 'Hello World! 2';
   }
 
   async test(): Promise<string> {
