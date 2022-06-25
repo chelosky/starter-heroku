@@ -31,7 +31,6 @@ export class AppService {
     });
 
     await browser.close();
-
     return mangaUrl;
   }
 }
