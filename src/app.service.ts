@@ -5,10 +5,10 @@ import Adblocker from 'puppeteer-extra-plugin-adblocker';
 @Injectable()
 export class AppService {
   getHello(): string {
-    return 'Hello World! 2';
+    return 'Hello World! 3';
   }
 
-  async test(): Promise<string> {
+  async test(): Promise<string[]> {
     puppeteer.use(Adblocker({ blockTrackers: true }));
     const browser = await puppeteer.launch({
       headless: true,
@@ -30,7 +30,26 @@ export class AppService {
       return aTag?.getAttribute('href');
     });
 
+    const page2 = await browser.newPage();
+    await page2.goto(mangaUrl!);
+
+    let currentUrl = await page2.url();
+    currentUrl = currentUrl.replace('paginated', 'cascade');
+
+    const client = await page2.target().createCDPSession();
+    await client.send('Network.clearBrowserCookies');
+    await client.send('Network.clearBrowserCache');
+
+    const page3 = await browser.newPage();
+    await page3.goto(currentUrl);
+
+    const imageUrls = await page3.$$eval('img.viewer-img', (imgs) => {
+      return imgs.map((img) =>
+        img.getAttribute('data-src')?.replace('japanreader', 'recipesandcook'),
+      );
+    });
+
     await browser.close();
-    return mangaUrl;
+    return imageUrls;
   }
 }

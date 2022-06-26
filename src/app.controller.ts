@@ -11,7 +11,7 @@ export class AppController {
   }
 
   @Get('webdriver')
-  async test(): Promise<string> {
-    return this.appService.test();
+  async test(): Promise<string[]> {
+    return await this.appService.test();
   }
 }
