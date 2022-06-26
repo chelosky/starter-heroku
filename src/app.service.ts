@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import puppeteer from 'puppeteer-extra';
 import Adblocker from 'puppeteer-extra-plugin-adblocker';
+import StealthPlugin from 'puppeteer-extra-plugin-stealth';
+import randomUseragent from 'random-useragent';
 
 @Injectable()
 export class AppService {
@@ -9,13 +11,16 @@ export class AppService {
   }
 
   async test(): Promise<string[]> {
+    puppeteer.use(StealthPlugin());
     puppeteer.use(Adblocker({ blockTrackers: true }));
     const browser = await puppeteer.launch({
-      headless: false,
+      headless: true,
       args: ['--no-sandbox', '--disable-setuid-sandbox'],
     });
-    const page = await browser.newPage();
     const url = 'https://lectortmo.com/library/manga/9276/one-punch-man';
+    const page = await browser.newPage();
+    const userAgent = randomUseragent.getRandom();
+    await page.setUserAgent(userAgent);
     await page.goto(url);
 
     const mangaUrl = await page.$eval('ul.chapter-list', (container) => {
